@@ -2,26 +2,21 @@ import os
 import requests
 import streamlit as st
 from datetime import datetime
-from dotenv import load_dotenv
 
-# Set page config
 st.set_page_config(page_title="Weather App", page_icon="☁️", layout="centered")
 
-# Use secrets or environment variables for API key
-# In production, use st.secrets["OPENWEATHER_API_KEY"]
-# For development, you can set environment variables or use a .env file with python-dotenv
-load_dotenv()  # take environment variables from .env
-api_key = os.environ.get("OPENWEATHER_API_KEY")
 
-# Add a title and description
+api_key = st.secrets["OPENWEATHER_API_KEY"]
+
+# title and description
 st.title("☁️ Weather Dashboard")
 st.write("Get current weather information for any city around the world.")
 
 
-@st.cache_data(ttl=300)  # Cache data for 5 minutes
+@st.cache_data(ttl=300)  # Caching data for 5 minutes
 def get_weather_data(city):
     """
-    Make a GET request to the OpenWeatherMap API for the given city name
+    Making a GET request to the OpenWeatherMap API for the given city name
 
     Parameters
     ----------
@@ -63,7 +58,7 @@ def display_weather_data(data):
         st.error("City not found. Please check the spelling and try again.")
         return
 
-    # Get timestamp and convert to readable date/time
+   
     timestamp = data.get("dt", 0)
     date_time = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -72,7 +67,7 @@ def display_weather_data(data):
     with col1:
         st.header(f"{data['name']}, {data['sys']['country']}")
     with col2:
-        # Display weather icon
+        # weather icon
         if "weather" in data and len(data["weather"]) > 0:
             icon_code = data["weather"][0]["icon"]
             icon_url = f"http://openweathermap.org/img/wn/{icon_code}@2x.png"
@@ -121,21 +116,17 @@ def display_weather_data(data):
 
 
 def main():
-    # City search box
     city = st.text_input("Enter a city name:", key="city_input")
 
-    # Search button
     search_col, clear_col = st.columns([1, 5])
     with search_col:
         search = st.button("Search")
 
-    # If search button is clicked or Enter is pressed in the text input
     if search and city:
         with st.spinner("Fetching weather data..."):
             data = get_weather_data(city)
             display_weather_data(data)
 
-    # Show some helpful information when no city is entered
     if not city:
         st.info("Enter a city name to get started!")
 
