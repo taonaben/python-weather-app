@@ -54,11 +54,10 @@ def display_weather_data(data):
     if data is None:
         return
 
-    if data.get("cod") == "404":
+    if data.get("cod") == "404" or "name" not in data:
         st.error("City not found. Please check the spelling and try again.")
         return
 
-   
     timestamp = data.get("dt", 0)
     date_time = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
 
